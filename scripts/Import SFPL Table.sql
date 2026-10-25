@@ -19,11 +19,11 @@ within_san_francisco_county 	varchar(100) 	NOT NULL,
 year_patron_registered			  varchar(100) 	NOT NULL
 );
 
--- Select the table from file path
+-- Select the table from file path (must be csv file)
+-- Make sure the newly created csv file doesn't include the headers
 LOAD DATA LOCAL INFILE 'C:/Users/G_ort/Desktop/SFPL.csv'
 -- Import into the raw table
 INTO TABLE raw_all_info
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
+LINES TERMINATED BY '\n';
