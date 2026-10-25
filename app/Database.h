@@ -9,7 +9,7 @@ using namespace sql;
 class Database
 {
 private:
-  Connection* con;
+  Connection* myConnection;
 public:
   Database();
   void viewPatronTypes();
