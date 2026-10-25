@@ -12,8 +12,5 @@ private:
   Connection* con;
 public:
   Database();
-  void displayPatronTypes();
-  void displayLibraries();
-  void searchUsageByPatronType();
-  void CheckoutTotals();
+  void viewPatronTypes();
 };
