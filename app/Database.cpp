@@ -56,7 +56,7 @@ void Database::searchPatronType()
     cin.ignore();
     getline(cin, input);
 
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT p.patron_type_definition, u.checkout_total 
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT p.patron_type_definition, u.checkout_total "
 															 		  "FROM sfpl_usage u "
 															 		  "JOIN patron_types p "
 															 		  "ON u.patron_type_code = p.patron_type_code"
@@ -79,7 +79,7 @@ void Database::searchLibrary()
     cin.ignore();
     getline(cin, input);
 
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT l.home_library_definition, u.checkout_total 
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT l.home_library_definition, u.checkout_total "
 															 		  "FROM sfpl_usage u "
 															 		  "JOIN home_library l "
 															 		  "ON u.home_library_code = p.home_library_code"
