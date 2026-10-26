@@ -11,15 +11,16 @@ int main()
   {
     cout << "---------------------" << endl;
     cout << "1. View Patron Types" << endl;
-    cout << "2. " << endl;
-    cout << "3. " << endl;
-    cout << "4. " << endl;
-    cout << "5. " << endl;
-    cout << "6. " << endl;
-    cout << "7. " << endl;
-    cout << "8. " << endl;
-    cout << "9. " << endl;
-    cout << "10. " << endl;
+    cout << "2. View Libraries" << endl;
+    cout << "3. View Notification Mediums" << endl;
+    cout << "4. Search by Patron Type" << endl;
+    cout << "5. Search by Home Library" << endl;
+    cout << "6. Total Checkouts by Patron Type" << endl;
+    cout << "7. Total Checkouts by Library" << endl;
+    cout << "8. Add Record" << endl;
+    cout << "9. Update Record" << endl;
+    cout << "10. Delete Record" << endl;
+    cout << "11. Exit Program" << endl;
     cout << "---------------------" << endl;
 
     cin >> input;
@@ -27,34 +28,37 @@ int main()
     switch(input)
     {
       case (1):
-        viewPatronTypes();
+        my_db.viewPatronTypes();
         break;
       case (2):
-        //do
+        my_db.viewLibraries();
         break;
       case (3):
-        //do
+        my_db.viewNotificationMediums();
         break;
       case (4):
-        //do
+        my_db.searchPatronType();
         break;
       case (5):
-        //do
+        my_db.searchLibrary();
         break;
       case (6):
-        //do
+        my_db.totalCheckoutsByPatronType();
         break;
       case (7):
-        //do
+        my_db.totalCheckoutsByLibrary();
         break;
       case (8):
-        //do
+        my_db.addUsageRecord();
         break;
       case (9):
-        //do
+        my_db.updateUsageRecord();
+        break;
+      case (10):
+        my_db.deleteUsageRecord();
         break;
     }
-  } while (input != 10);
+  } while (input != 11);
 
   return 0;
 }
