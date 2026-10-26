@@ -12,15 +12,16 @@
 class Database
 {
 private:
-  Connection* myConnection;
+	sql::Connection* myConnection;
 public:
-  Database();
-  void viewPatronTypes();
-  void viewLibraries();
+	Database();
+	void viewPatronTypes();
+	void viewLibraries();
 	void viewNotificationMediums();
 
 	void searchPatronType();
 	void searchLibrary();
+	void searchByID();
 
 	void totalCheckoutsByPatronType();
 	void totalCheckoutsByLibrary();
