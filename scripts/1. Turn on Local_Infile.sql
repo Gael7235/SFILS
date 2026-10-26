@@ -6,4 +6,4 @@ SET GLOBAL LOCAL_INFILE = 1;
 SHOW VARIABLES LIKE 'local_infile';
 
 --Have to enable it in the server connections for your specific server as well using OPT_LOCAL_INFILE=1
---Shown in the Screenshots in the docs repository
+--Shown in the Screenshots in the docs repository (Labeled 1. Turn on Local_Infile.png, then also proceed in doing what's shown in sceenshot 2.)
