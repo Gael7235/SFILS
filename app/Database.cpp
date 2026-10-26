@@ -3,11 +3,19 @@
 
 Database::Database()
 {
-    sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
-
-    myConnection = driver->connect("tcp://127.0.0.1:3306", "root", "Gael77523912Root*");
-  
-    myConnection->setSchema("SFPL_DB");
+     try
+	 {
+	     sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
+	
+	     myConnection = driver->connect("tcp://localhost:3306", "sfils_user", "Library123!");
+	
+	     myConnection->setSchema("SFPL_DB");
+	 }
+	 catch (const sql::SQLException& e) {
+	     std::cerr << "SQL Error: " << e.what() << endl;
+	     std::cerr << "Error Code: " << e.getErrorCode() << endl;
+	     std::cerr << "SQL State: " << e.getSQLState() << endl;
+	 }
 }
 
 void Database::viewPatronTypes()
