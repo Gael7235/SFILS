@@ -13,7 +13,7 @@ IDENTIFIED WITH caching_sha2_password
 BY 'mypassword123';
 
 -- Shows all users and whether it worked or not
-SELECT user, host
+SELECT user, host, plugin
 FROM mysql.user;
 
 -- Refreshes privileges
