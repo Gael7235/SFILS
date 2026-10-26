@@ -13,4 +13,16 @@ private:
 public:
   Database();
   void viewPatronTypes();
+  void viewLibraries();
+	void viewNotificationMediums();
+
+	void searchPatronType();
+	void searchLibrary();
+
+	void totalCheckoutsByPatronType();
+	void totalCheckoutsByLibrary();
+
+	void addUsageRecord();
+	void updateUsageRecord();
+	void deleteUsageRecord();
 };
