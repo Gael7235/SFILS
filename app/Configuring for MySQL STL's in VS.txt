@@ -16,6 +16,6 @@
      h) After that we can press "OK" and exit the pop-up and your VS should be configured for MySQL Library support.
 
 4. We need to add two files from the Connector to the project folder next to the .exe application file that runs the program. Find the "libssl-3-x64.dll" and "libcrypto-3-x64.dll" in the "lib64" folder in your connector and copy them.
-   Then paste them into the folder that holds you .exe file for your program in VS, this should be in "/x64/Release/" path in your project solution folder. (Screenshots 4.a and 4.b in docs)
+   Then paste them into the folder that holds you .exe file for your program in VS, this should be in "/x64/Release/" path in your project solution folder. (Screenshots 3.a and 3.b in docs)
 
 5. Now you can finally run the program.
