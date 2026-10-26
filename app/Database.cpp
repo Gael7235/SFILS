@@ -1,19 +1,13 @@
 #include <iostream>
 #include "Database.h"
 
-#include <mysql_driver.h>
-#include <mysql_connection.h>
-#include <cppconn/statement.h>
-#include <cppconn/resultset.h>
-
 Database::Database()
 {
     sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
 
     myConnection = driver->connect("tcp://127.0.0.1:3306", "root", "Gael77523912Root*");
   
-    // San Francisco spelled wrong for schema (franciso)
-    myConnection->setSchema("sanfrancisopubliclibrary");
+    myConnection->setSchema("SFPL_DB");
 }
 
 void Database::viewPatronTypes()
