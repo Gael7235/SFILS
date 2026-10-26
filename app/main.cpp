@@ -57,6 +57,12 @@ int main()
       case (10):
         my_db.deleteUsageRecord();
         break;
+      case (11):
+        cout << "Exiting" << endl;
+        break;
+      default:
+        cout << "Invalid number" << endl;
+        break;
     }
   } while (input != 11);
 
