@@ -142,7 +142,7 @@ void Database::addUsageRecord()
     cout << "Checkouts: ";
     cin >> input_checkouts;
 
-    sql::PreparedStatement* prepCommand = con->prepareStatement("INSERT INTO library_usage "
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("INSERT INTO library_usage "
         													 "(patron_type_code, home_library_code, checkout_total)VALUES(?,?,?)");
 
     prepCommand->setInt(1, input_patronCode);
@@ -163,7 +163,7 @@ void Database::updateUsageRecord()
     cout << "New Checkout Total: ";
     cin >> input_checkouts;
 
-    sql::PreparedStatement* prepCommand = con->prepareStatement("UPDATE library_usage "
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("UPDATE library_usage "
         												  "SET checkout_total=? "
        													  "WHERE usage_id=?");
 
@@ -180,7 +180,7 @@ void Database::deleteUsageRecord()
     cout << "Usage ID: ";
     cin >> input_id;
 
-    sql::PreparedStatement* prepCommand = con->prepareStatement("DELETE FROM library_usage "
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("DELETE FROM library_usage "
         														"WHERE usage_id=?");
 
     prepCommand->setInt(1, input_id);
