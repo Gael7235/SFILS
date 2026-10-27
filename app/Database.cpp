@@ -269,6 +269,16 @@ void Database::addRecord()
     prepCommand->setInt(11, year_registered);
 
     prepCommand->execute();
+
+    sql::Statement* command = myConnection->createStatement();
+    sql::ResultSet* row = command->executeQuery("SELECT LAST_INSERT_ID()");
+
+    cout << endl;
+    if (row->next())
+    {
+        int newId = row->getInt(1);
+        cout << "Record added with ID: " << newId << endl;
+    }
 }
 
 void Database::updateRecord()
