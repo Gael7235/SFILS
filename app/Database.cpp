@@ -11,7 +11,7 @@ Database::Database()
     {
         sql::mysql::MySQL_Driver* driver = sql::mysql::get_mysql_driver_instance();
 
-        myConnection = driver->connect("tcp://localhost:3306", "sfils_user", "Library123!");
+        myConnection = driver->connect("tcp://localhost:3306", "guest_user_sfpl", "mypassword123");
 
         myConnection->setSchema("SFPL_DB");
     }
@@ -55,61 +55,20 @@ void Database::viewNotificationMediums()
     }
 }
 
-void Database::searchPatronType()
+void Database::viewAgeRangeOptions()
 {
-    string input;
-
-    string ans;
-    cout << "Show options? (y/n) ";
-    cin >> ans;
-    if (ans == "y") {cout << endl; viewPatronTypes(); cout << endl;}
-
-    cout << "Enter patron type: ";
-    cin.ignore();
-    getline(cin, input);
-
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT p.patron_type_definition, u.checkout_total "
-                                                                         "FROM sfpl_usage u "
-                                                                         "JOIN patron_type p "
-                                                                         "ON u.patron_type_code = p.patron_type_code "
-                                                                         "WHERE p.patron_type_definition = ? ");
-
-    prepCommand->setString(1, input);
-
-    sql::ResultSet* row = prepCommand->executeQuery();
-
-    while (row->next())
+    sql::Statement* command = myConnection->createStatement();
+    sql::ResultSet* row = command->executeQuery("SELECT DISTINCT patron_age_range "
+                                                "FROM sfpl_usage "
+                                                "ORDER BY patron_age_range ASC");
+    
+    int x = 1;
+    cout << "Age Range Options: " << endl;
+    cout << endl;
+    while (row->next() && x < 12)
     {
-        cout << row->getString("patron_type_definition") << " " << row->getInt("checkout_total") << endl;
-    }
-}
-
-void Database::searchLibrary()
-{
-    string input;
-
-    string ans;
-    cout << "Show options? (y/n) ";
-    cin >> ans;
-    if (ans == "y") { cout << endl; viewPatronTypes(); cout << endl; }
-
-    cout << "Enter Home Library: ";
-    cin.ignore();
-    getline(cin, input);
-
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("SELECT l.home_library_definition, u.checkout_total "
-        "FROM sfpl_usage u "
-        "JOIN home_library l "
-        "ON u.home_library_code = p.home_library_code "
-        "WHERE p.home_library_definition = ?");
-
-    prepCommand->setString(1, input);
-
-    sql::ResultSet* row = prepCommand->executeQuery();
-
-    while (row->next())
-    {
-        cout << row->getString("home_library_definition") << " " << row->getInt("checkout_total") << endl;
+        cout << x << ". " << ((row->getString("patron_age_range")=="") ? "'empty'" : row->getString("patron_age_range")) << endl;
+        x++;
     }
 }
 
@@ -148,91 +107,316 @@ void Database::searchByID()
     }
 }
 
-void Database::totalCheckoutsByPatronType()
+void Database::PatronTypeData()
 {
     sql::Statement* command = myConnection->createStatement();
-    sql::ResultSet* row = command->executeQuery("SELECT p.patron_type_definition, SUM(u.checkout_total) total "
+    sql::ResultSet* row = command->executeQuery("SELECT p.patron_type_definition, SUM(u.checkout_total) c_tot, SUM(u.renewal_total) r_tot "
                                                 "FROM sfpl_usage u "
                                                 "JOIN patron_type p "
                                                 "ON p.patron_type_code = u.patron_type_code "
                                                 "GROUP BY p.patron_type_definition "
-                                                "ORDER BY total DESC");
+                                                "ORDER BY c_tot DESC");
+    cout << "_____________________________________________________________" << endl;
+    cout << left << setw(20) << "|Patron Type" << setw(20) << "|Checkout Totals" << setw(20) << "|Renewal Totals     |" << endl;
+    cout << "-------------------------------------------------------------" << endl;
+    cout << endl;
+    cout << "-------------------------------------------------------------" << endl;
     while (row->next())
     {
-        cout << row->getString("patron_type_definition") << ": " << row->getInt("total") << endl;
+        cout << left << "|" << setw(19) << row->getString("patron_type_definition") << "|" << setw(19) << row->getInt("c_tot") << "|" << setw(19) << row->getInt("r_tot") << "|" << endl;
+        cout << "-------------------------------------------------------------" << endl;
     }
 }
 
-void Database::totalCheckoutsByLibrary()
+void Database::LibraryData()
 {
     sql::Statement* command = myConnection->createStatement();
-    sql::ResultSet* row = command->executeQuery("SELECT p.home_library_definition, SUM(u.checkout_total) total "
+    sql::ResultSet* row = command->executeQuery("SELECT p.home_library_definition, SUM(u.checkout_total) c_tot, SUM(u.renewal_total) r_tot "
                                                 "FROM sfpl_usage u "
                                                 "JOIN home_library p "
                                                 "ON p.home_library_code = u.home_library_code "
                                                 "GROUP BY p.home_library_definition "
-                                                "ORDER BY total DESC");
+                                                "ORDER BY c_tot DESC");
+    cout << "_____________________________________________________________" << endl;
+    cout << left << setw(20) << "|Home Library" << setw(20) << "|Checkout Totals" << setw(20) << "|Renewal Totals     |" << endl;
+    cout << "-------------------------------------------------------------" << endl;
+    cout << endl;
+    cout << "-------------------------------------------------------------" << endl;
     while (row->next())
     {
-        cout << row->getString("home_library_definition") << ": " << row->getInt("total") << endl;
+        cout << left << "|" << setw(19) << row->getString("home_library_definition") << "|" << setw(19) << row->getInt("c_tot") << "|" << setw(19) << row->getInt("r_tot") << "|" << endl;
+        cout << "-------------------------------------------------------------" << endl;
     }
 }
 
-void Database::addUsageRecord()
+void Database::addRecord()
 {
-    int input_patronCode;
-    string input_libraryCode;
-    int input_checkouts;
+    int patron_age_range, input_checkouts, input_renewals, circ_act_year, within_SF_County, year_registered;
+    string patron_type_code, age_range, home_library_code, notification_medium_code, circ_act_month;
+    string ans;
 
-    cout << "Patron Code: ";
-    cin >> input_patronCode;
+    cout << "Show Patron options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewPatronTypes(); cout << endl; }
+    cout << "Enter Patron Type CODE: ";
+    cin >> patron_type_code;
+    cout << endl;
 
-    cout << "Library Code: ";
-    cin >> input_libraryCode;
+    cout << "Show Age Range options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewAgeRangeOptions(); cout << endl; }
 
-    cout << "Checkouts: ";
+    do
+    {
+        cout << "Enter Patron Age Range #: ";
+        cin >> patron_age_range;
+
+        switch (patron_age_range)
+        {
+        case (1):
+            age_range = "";
+            break;
+        case (2):
+            age_range = "0 to 9 years";
+            break;
+        case (3):
+            age_range = "10 to 19 years";
+            break;
+        case (4):
+            age_range = "20 to 24 years";
+            break;
+        case (5):
+            age_range = "25 to 34 years";
+            break;
+        case (6):
+            age_range = "35 to 44 years";
+            break;
+        case (7):
+            age_range = "45 to 54 years";
+            break;
+        case (8):
+            age_range = "55 to 59 years";
+            break;
+        case (9):
+            age_range = "60 to 64 years";
+            break;
+        case (10):
+            age_range = "65 to 74 years";
+            break;
+        case (11):
+            age_range = "75 years and over";
+            break;
+        default:
+            age_range = "";
+            cout << "Invalid number" << endl;
+            break;
+        }
+    } while (age_range == "");
+    cout << endl;
+
+    cout << "Enter Checkout Total (0 for default): ";
     cin >> input_checkouts;
+    cout << endl;
 
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("INSERT INTO library_usage "
-                                                                         "(patron_type_code, home_library_code, checkout_total)VALUES(?,?,?)");
+    cout << "Enter Renewal Total (0 for default): ";
+    cin >> input_renewals;
+    cout << endl;
 
-    prepCommand->setInt(1, input_patronCode);
-    prepCommand->setString(2, input_libraryCode);
+    cout << "Show Library options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewLibraries(); cout << endl; }
+    cout << "Enter Home Library CODE: ";
+    cin >> home_library_code;
+    cout << endl;
+
+    cout << "Show Notification Medium options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewNotificationMediums(); cout << endl; }
+    cout << "Enter Notification Medium CODE: ";
+    cin >> notification_medium_code;
+    cout << endl;
+
+    cout << "Enter Circulation Active Year (0 for NULL): ";
+    cin >> circ_act_year;
+    cout << endl;
+
+    cout << "Enter Circulation Active Month: ";
+    cin >> circ_act_month;
+    cout << endl;
+
+    cout << "Within San Francisco County? Enter # (1 for yes, 0 for no): ";
+    cin >> within_SF_County;
+    cout << endl;
+
+    cout << "Year Registered: ";
+    cin >> year_registered;
+    cout << endl;
+
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("INSERT INTO sfpl_usage "
+                                                                         "(patron_type_code, patron_age_range, checkout_total, renewal_total, home_library_code, notification_medium_code, provided_email_address, circulation_active_year, circulation_active_month, within_SF_County, year_patron_registered) "
+                                                                         "VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+
+    prepCommand->setString(1, patron_type_code);
+    prepCommand->setString(2, age_range);
     prepCommand->setInt(3, input_checkouts);
+    prepCommand->setInt(4, input_renewals);
+    prepCommand->setString(5, home_library_code);
+    prepCommand->setString(6, notification_medium_code);
+    prepCommand->setInt(7, ((notification_medium_code == "z") ? 1 : 0));
+    prepCommand->setInt(8, circ_act_year);
+    prepCommand->setString(9, circ_act_month);
+    prepCommand->setInt(10, within_SF_County);
+    prepCommand->setInt(11, year_registered);
 
     prepCommand->execute();
 }
 
-void Database::updateUsageRecord()
+void Database::updateRecord()
 {
-    int input_id;
-    int input_checkouts;
+    int id, patron_age_range, input_checkouts, input_renewals, circ_act_year, within_SF_County, year_registered;
+    string patron_type_code, age_range, home_library_code, notification_medium_code, circ_act_month;
+    string ans;
 
-    cout << "Usage ID: ";
-    cin >> input_id;
+    cout << "Enter ID: ";
+    cin >> id;
+    cout << endl;
 
-    cout << "New Checkout Total: ";
+    cout << "Show Patron options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewPatronTypes(); cout << endl; }
+    cout << "Enter Patron Type CODE: ";
+    cin >> patron_type_code;
+    cout << endl;
+
+    cout << "Show Age Range options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewAgeRangeOptions(); cout << endl; }
+
+    do
+    {
+    cout << "Enter Patron Age Range #: ";
+    cin >> patron_age_range;
+
+        switch (patron_age_range)
+        {
+        case (1):
+            age_range = "";
+            break;
+        case (2):
+            age_range = "0 to 9 years";
+            break;
+        case (3):
+            age_range = "10 to 19 years";
+            break;
+        case (4):
+            age_range = "20 to 24 years";
+            break;
+        case (5):
+            age_range = "25 to 34 years";
+            break;
+        case (6):
+            age_range = "35 to 44 years";
+            break;
+        case (7):
+            age_range = "45 to 54 years";
+            break;
+        case (8):
+            age_range = "55 to 59 years";
+            break;
+        case (9):
+            age_range = "60 to 64 years";
+            break;
+        case (10):
+            age_range = "65 to 74 years";
+            break;
+        case (11):
+            age_range = "75 years and over";
+            break;
+        default:
+            age_range = "";
+            cout << "Invalid number" << endl;
+            break;
+        }
+    } while (age_range=="");
+    cout << endl;
+
+    cout << "Enter Checkout Total (0 for default): ";
     cin >> input_checkouts;
+    cout << endl;
 
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("UPDATE library_usage "
-                                                                         "SET checkout_total=? "
-                                                                         "WHERE usage_id=?");
+    cout << "Enter Renewal Total (0 for default): ";
+    cin >> input_renewals;
+    cout << endl;
+    
+    cout << "Show Library options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewLibraries(); cout << endl; }
+    cout << "Enter Home Library CODE: ";
+    cin >> home_library_code;
+    cout << endl;
 
-    prepCommand->setInt(1, input_checkouts);
-    prepCommand->setInt(2, input_id);
+    cout << "Show Notification Medium options? (y/n) ";
+    cin >> ans;
+    if (ans == "y") { cout << endl; viewNotificationMediums(); cout << endl; }
+    cout << "Enter Notification Medium CODE: ";
+    cin >> notification_medium_code;
+    cout << endl;
+
+    cout << "Enter Circulation Active Year (0 for NULL): ";
+    cin >> circ_act_year;
+    cout << endl;
+
+    cout << "Enter Circulation Active Month: ";
+    cin >> circ_act_month;
+    cout << endl;
+
+    cout << "Within San Francisco County? Enter # (1 for yes, 0 for no): ";
+    cin >> within_SF_County;
+    cout << endl;
+
+    cout << "Year Registered: ";
+    cin >> year_registered;
+    cout << endl;
+
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("UPDATE sfpl_usage "
+                                                                         "SET patron_type_code=?, "
+                                                                             "patron_age_range=?, "
+                                                                             "checkout_total=?, "
+                                                                             "renewal_total=?, "
+                                                                             "home_library_code=?, "
+                                                                             "notification_medium_code=?, "
+                                                                             "provided_email_address=?, "
+                                                                             "circulation_active_year=?, "
+                                                                             "circulation_active_month=?, "
+                                                                             "within_SF_County=?, "
+                                                                             "year_patron_registered=? "
+                                                                         "WHERE id=?");
+
+    prepCommand->setString(1, patron_type_code);
+    prepCommand->setString(2, age_range);
+    prepCommand->setInt(3, input_checkouts);
+    prepCommand->setInt(4, input_renewals);
+    prepCommand->setString(5, home_library_code);
+    prepCommand->setString(6, notification_medium_code);
+    prepCommand->setInt(7, ((notification_medium_code=="z") ? 1 : 0));
+    prepCommand->setInt(8, circ_act_year);
+    prepCommand->setString(9, circ_act_month);
+    prepCommand->setInt(10, within_SF_County);
+    prepCommand->setInt(11, year_registered);
+    prepCommand->setInt(12, id);
 
     prepCommand->execute();
 }
 
-void Database::deleteUsageRecord()
+void Database::deleteRecord()
 {
     int input_id;
 
-    cout << "Usage ID: ";
+    cout << "Enter ID: ";
     cin >> input_id;
 
-    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("DELETE FROM library_usage "
-                                                                         "WHERE usage_id=?");
+    sql::PreparedStatement* prepCommand = myConnection->prepareStatement("DELETE FROM sfpl_usage "
+                                                                         "WHERE id=?");
 
     prepCommand->setInt(1, input_id);
 
