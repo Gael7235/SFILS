@@ -1,0 +1,3 @@
+Screenshots within this same repository show the data stats on each patron type (Adult, Juvenile, Teen, etc) and their total checkout and renewal values. Same for the Library types/homes.
+Overall, I think it was pretty difficult configuring the code to work with the library functions and connect to the database, but in the end I was able to.
+It was pretty difficult to figure out a good way to split up the main table into tables, so I didn't really have an idea as to what tables to have, but I did add definition tables for the patron types, home libraries, and notification mediums, so it would just be a lookup value from the "code" to the "definition".
