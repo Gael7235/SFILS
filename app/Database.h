@@ -18,15 +18,14 @@ public:
 	void viewPatronTypes();
 	void viewLibraries();
 	void viewNotificationMediums();
+	void viewAgeRangeOptions();
 
-	void searchPatronType();
-	void searchLibrary();
 	void searchByID();
 
-	void totalCheckoutsByPatronType();
-	void totalCheckoutsByLibrary();
+	void PatronTypeData();
+	void LibraryData();
 
-	void addUsageRecord();
-	void updateUsageRecord();
-	void deleteUsageRecord();
+	void addRecord();
+	void updateRecord();
+	void deleteRecord();
 };
