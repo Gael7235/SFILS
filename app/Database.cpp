@@ -25,7 +25,7 @@ Database::Database()
 void Database::viewPatronTypes()
 {
     sql::Statement* command = myConnection->createStatement();
-    sql::ResultSet* row = row = command->executeQuery("SELECT * FROM patron_type");
+    sql::ResultSet* row = command->executeQuery("SELECT * FROM patron_type");
 
     while (row->next())
     {
