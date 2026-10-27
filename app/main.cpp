@@ -12,21 +12,20 @@ int main()
         cout << "-------------------------------------------------------" << endl;
         cout << "C++ Interface for San Francisco Public Library Database" << endl;
         cout << "-------------------------------------------------------" << endl;
-        cout << "1. View Patron Types" << endl;
-        cout << "2. View Libraries" << endl;
-        cout << "3. View Notification Mediums" << endl;
-        cout << "4. Search by Patron Type" << endl;
-        cout << "5. Search by Home Library" << endl;
-        cout << "6. Total Checkouts by Patron Type" << endl;
-        cout << "7. Total Checkouts by Library" << endl;
+        cout << "1. View Patron Types Options" << endl;
+        cout << "2. View Libraries Options" << endl;
+        cout << "3. View Notification Mediums Options" << endl;
+        cout << "4. View Age Range Options" << endl;
+        cout << "5. Search by ID" << endl;
+        cout << "6. Patron Type Data" << endl;
+        cout << "7. Home Library Data" << endl;
         cout << "8. Add Record" << endl;
         cout << "9. Update Record" << endl;
         cout << "10. Delete Record" << endl;
-        cout << "11. Search by ID" << endl;
-        cout << "12. Exit Program" << endl;
+        cout << "11. Exit Program" << endl;
         cout << "--------------------------------------------------------" << endl;
 
-        cout << "Enter Option: ";
+        cout << "Enter Option #: ";
         cin >> input;
         cout << endl;
 
@@ -42,30 +41,27 @@ int main()
             my_db.viewNotificationMediums();
             break;
         case (4):
-            my_db.searchPatronType();
+            my_db.viewAgeRangeOptions();
             break;
         case (5):
-            my_db.searchLibrary();
-            break;
-        case (6):
-            my_db.totalCheckoutsByPatronType();
-            break;
-        case (7):
-            my_db.totalCheckoutsByLibrary();
-            break;
-        case (8):
-            my_db.addUsageRecord();
-            break;
-        case (9):
-            my_db.updateUsageRecord();
-            break;
-        case (10):
-            my_db.deleteUsageRecord();
-            break;
-        case (11):
             my_db.searchByID();
             break;
-        case (12):
+        case (6):
+            my_db.PatronTypeData();
+            break;
+        case (7):
+            my_db.LibraryData();
+            break;
+        case (8):
+            my_db.addRecord();
+            break;
+        case (9):
+            my_db.updateRecord();
+            break;
+        case (10):
+            my_db.deleteRecord();
+            break;
+        case (11):
             cout << "Exiting" << endl;
             break;
         default:
@@ -77,7 +73,7 @@ int main()
         cout << "Press Enter to Continue..." << endl;
         cin.ignore();
         cin.get();
-    } while (input != 12);
+    } while (input != 11);
 
     return 0;
 }
