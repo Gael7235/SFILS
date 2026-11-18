@@ -103,9 +103,9 @@ void Database::searchByID()
 
     cout << "ID: " << doc["id"].get_int32() << endl;
 
-    cout << "Patron Type: " << doc["patron_type_definition"].string(doc["field"].get_string().value) << endl;
+    cout << "Patron Type: " << string(doc["patron_type_definition"].get_string().value) << endl;
 
-    cout << "Age Range: " << doc["age_range"].string(doc["field"].get_string().value) << endl;
+    cout << "Age Range: " << string(doc["age_range"].get_string().value) << endl;
 
     cout << "Checkouts: " << doc["checkout_total"].get_int32() << endl;
 
@@ -122,7 +122,7 @@ void Database::PatronTypeData()
 
     for (auto&& doc : cursor)
     {
-        cout << doc["_id"].string(doc["field"].get_string().value) << " | Checkouts: " << doc["total_checkouts"].get_int32() << " | Renewals: " << doc["total_renewals"].get_int32() << endl;
+        cout << string(doc["_id"].get_string().value) << " | Checkouts: " << doc["total_checkouts"].get_int32() << " | Renewals: " << doc["total_renewals"].get_int32() << endl;
     }
 }
 
@@ -135,7 +135,7 @@ void Database::LibraryData()
     auto cursor = myTable.aggregate(p);
 
     for (auto&& doc : cursor) {
-        cout << doc["_id"].string(doc["field"].get_string().value) << " -> " << doc["total_checkouts"].get_int32() << endl;
+        cout << string(doc["_id"].get_string().value) << " -> " << doc["total_checkouts"].get_int32() << endl;
     }
 }
 
