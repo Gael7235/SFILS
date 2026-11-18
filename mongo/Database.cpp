@@ -26,7 +26,7 @@ void Database::viewPatronTypes()
     set<string> patronTypes;
 
     for (auto&& doc : cursor) {
-        patronTypes.insert(doc["patron_type_definition"].get_string().value.to_string());
+        patronTypes.insert(string(doc["patron_type_definition"].get_string().value));
     }
 
     for (auto& type : patronTypes) {
@@ -41,7 +41,7 @@ void Database::viewLibraries()
     set<string> libraries;
 
     for (auto&& doc : cursor) {
-        libraries.insert(doc["home_library_definition"].get_string().value.to_string());
+        libraries.insert(string(doc["home_library_definition"].get_string().value));
     }
 
     for (auto& lib : libraries) {
@@ -56,7 +56,7 @@ void Database::viewNotificationMediums()
     set<string> mediums;
 
     for (auto&& doc : cursor) {
-        mediums.insert(doc["notification_medium_definition"].get_string().value.to_string());
+        mediums.insert(string(doc["notification_medium_definition"].get_string().value));
     }
 
     for (auto& medium : mediums) {
@@ -72,8 +72,7 @@ void Database::viewAgeRangeOptions()
 
     for (auto&& doc : cursor) {
         if(doc["age_range"]){
-            ranges.insert(doc["age_range"].get_string().value.to_string()
-            );
+            ranges.insert(string(doc["age_range"].get_string().value));
         }
     }
 
@@ -104,9 +103,9 @@ void Database::searchByID()
 
     cout << "ID: " << doc["id"].get_int32() << endl;
 
-    cout << "Patron Type: " << doc["patron_type_definition"].get_string().value.to_string() << endl;
+    cout << "Patron Type: " << doc["patron_type_definition"].string(doc["field"].get_string().value) << endl;
 
-    cout << "Age Range: " << doc["age_range"].get_string().value.to_string() << endl;
+    cout << "Age Range: " << doc["age_range"].string(doc["field"].get_string().value) << endl;
 
     cout << "Checkouts: " << doc["checkout_total"].get_int32() << endl;
 
@@ -123,7 +122,7 @@ void Database::PatronTypeData()
 
     for (auto&& doc : cursor)
     {
-        cout << doc["_id"].get_string().value.to_string() << " | Checkouts: " << doc["total_checkouts"].get_int32() << " | Renewals: " << doc["total_renewals"].get_int32() << endl;
+        cout << doc["_id"].string(doc["field"].get_string().value) << " | Checkouts: " << doc["total_checkouts"].get_int32() << " | Renewals: " << doc["total_renewals"].get_int32() << endl;
     }
 }
 
@@ -136,7 +135,7 @@ void Database::LibraryData()
     auto cursor = myTable.aggregate(p);
 
     for (auto&& doc : cursor) {
-        cout << doc["_id"].get_string().value.to_string() << " -> " << doc["total_checkouts"].get_int32() << endl;
+        cout << doc["_id"].string(doc["field"].get_string().value) << " -> " << doc["total_checkouts"].get_int32() << endl;
     }
 }
 
