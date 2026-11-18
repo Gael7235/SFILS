@@ -1,5 +1,7 @@
 #include "Database.h"
 #include <iomanip>
+#include <set>
+mongocxx::instance Database::instance{};
 
 using namespace std;
 
