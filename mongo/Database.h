@@ -11,7 +11,6 @@
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
-mongocxx::instance Database::instance{};
 
 class Database
 {
@@ -25,6 +24,7 @@ public:
     void viewPatronTypes();
     void viewLibraries();
     void viewNotificationMediums();
+    void viewAgeRangeOptions();
 
     void searchByID();
 
