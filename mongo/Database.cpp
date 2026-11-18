@@ -64,6 +64,26 @@ void Database::viewNotificationMediums()
     }
 }
 
+void Database::viewAgeRangeOptions()
+{
+    auto cursor = myTable.find({});
+    
+    set<string> ranges;
+
+    for (auto&& doc : cursor) {
+        if(doc["age_range"]){
+            ranges.insert(doc["age_range"].get_string().value.to_string()
+            );
+        }
+    }
+
+    int count = 1;
+
+    for(auto& range : ranges) {
+        cout << count++ << ". " << range << endl;
+    }
+}
+
 void Database::searchByID()
 {
     int id;
