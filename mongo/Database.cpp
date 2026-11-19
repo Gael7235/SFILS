@@ -1,6 +1,7 @@
 #include "Database.h"
 #include <iomanip>
 #include <set>
+#include <string>
 mongocxx::instance Database::instance{};
 
 using namespace std;
@@ -22,94 +23,103 @@ Database::Database() : myConnection(mongocxx::uri("mongodb://localhost:27017"))
 void Database::viewPatronTypes()
 {
     auto cursor = myTable.find({});
+    set<pair<string, string>> patronTypes;
 
-    set<string> patronTypes;
-
+    // Stores wanted items (as {code, definition})
     for (auto&& doc : cursor) {
-        patronTypes.insert(string(doc["patron_type_definition"].get_string().value));
+        patronTypes.insert({string(doc["patron_type_code"].get_string().value), string(doc["patron_type_definition"].get_string().value)});
     }
 
+    // Outputs stored items (as code - definition)
     for (auto& type : patronTypes) {
-        cout << type << endl;
+        cout << type.first << " - " << type.second << endl;
     }
 }
 
 void Database::viewLibraries()
 {
     auto cursor = myTable.find({});
+    set<pair<string, string>> libraries;
 
-    set<string> libraries;
-
+    // Stores wanted items (as {code, definition})
     for (auto&& doc : cursor) {
-        libraries.insert(string(doc["home_library_definition"].get_string().value));
+        libraries.insert({string(doc["home_library_code"].get_string().value), string(doc["home_library_definition"].get_string().value)});
     }
 
+    // Outputs stored items (as code - definition)
     for (auto& lib : libraries) {
-        cout << lib << endl;
+        cout << lib.first << " - " << lib.second << endl;
     }
 }
 
 void Database::viewNotificationMediums()
 {
     auto cursor = myTable.find({});
+    set<pair<string, string>> mediums;
 
-    set<string> mediums;
-
+    // Stores wanted items (as {code, definition})
     for (auto&& doc : cursor) {
-        mediums.insert(string(doc["notification_medium_definition"].get_string().value));
+        mediums.insert({string(doc["notification_medium_code"].get_string().value), string(doc["notification_code_definition"].get_string().value)});
     }
 
+    // Outputs stored items (as code - definition)
     for (auto& medium : mediums) {
-        cout << medium << endl;
+        cout << medium.first << " - " << medium.second << endl;
     }
 }
 
 void Database::viewAgeRangeOptions()
 {
     auto cursor = myTable.find({});
-    
     set<string> ranges;
 
+    // Stores wanted items
     for (auto&& doc : cursor) {
-        if(doc["age_range"]){
+        if (doc["age_range"]) {
             ranges.insert(string(doc["age_range"].get_string().value));
         }
     }
 
-    int count = 1;
-
+    // Outputs stored items
+    int x = 1;
+    cout << "Age Range Options: " << endl;
+    cout << endl;
     for(auto& range : ranges) {
-        cout << count++ << ". " << range << endl;
+        cout << x << ". " << ((range=="") ? "empty" : range) << endl;
+        x++;
     }
 }
 
 void Database::searchByID()
 {
-    int id;
+    string input;
 
     cout << "Enter ID: ";
-    cin >> id;
+    cin.ignore();
+    getline(cin, input);
 
-    auto result = myTable.find_one(make_document(kvp("id", id)));
+     int int_input = stoi(input);
 
-    if (!result){
-        cout << "No record found." << endl;
-        return;
-    }
+    auto result = myTable.find_one(make_document(kvp("id", int_input)));
 
+    // If we didn't find an entry
+    if (!result) {cout << "Failed" << endl; return;}
+    
     auto doc = result->view();
 
     cout << endl;
-
-    cout << "ID: " << doc["id"].get_int32() << endl;
-
+    cout << "ID: " << doc["id"].get_int32().value << endl;
     cout << "Patron Type: " << string(doc["patron_type_definition"].get_string().value) << endl;
-
     cout << "Age Range: " << string(doc["age_range"].get_string().value) << endl;
-
-    cout << "Checkouts: " << doc["checkout_total"].get_int32() << endl;
-
-    cout << "Renewals: " << doc["renewal_total"].get_int32() << endl;
+    cout << "Total Checkouts: " << doc["checkout_total"].get_int32().value << endl;
+    cout << "Total Renewals: " << doc["renewal_total"].get_int32().value << endl;
+    cout << "Home Library: " << string(doc["home_library_definition"].get_string().value) << endl;
+    cout << "Notification Medium: " << string(doc["notification_code_definition"].get_string().value) << endl;
+    cout << "Provided Email Address?: " << (doc["provided_email_address"].get_bool() ? "Yes" : "No") << endl;
+    cout << "Circulation Year: " << string(doc["circulation_active_year"].get_string().value) << endl;
+    cout << "Circulation Month: " << string(doc["circulation_active_month"].get_string().value) << endl;
+    cout << "In SF County?: " << (doc["within_sf_county"].get_bool() ? "Yes" : "No") << endl;
+    cout << "Year Registered: " << string(doc["year_patron_registered"].get_string().value) << endl;
 }
 
 void Database::PatronTypeData()
@@ -122,7 +132,7 @@ void Database::PatronTypeData()
 
     for (auto&& doc : cursor)
     {
-        cout << string(doc["_id"].get_string().value) << " | Checkouts: " << doc["total_checkouts"].get_int32() << " | Renewals: " << doc["total_renewals"].get_int32() << endl;
+        cout << string(doc["_id"].get_string().value) << " | Checkouts: " << doc["total_checkouts"].get_int32().value << " | Renewals: " << doc["total_renewals"].get_int32().value << endl;
     }
 }
 
@@ -135,7 +145,7 @@ void Database::LibraryData()
     auto cursor = myTable.aggregate(p);
 
     for (auto&& doc : cursor) {
-        cout << string(doc["_id"].get_string().value) << " -> " << doc["total_checkouts"].get_int32() << endl;
+        cout << string(doc["_id"].get_string().value) << " -> " << doc["total_checkouts"].get_int32().value << endl;
     }
 }
 
